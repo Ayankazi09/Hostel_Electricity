@@ -1,6 +1,9 @@
+from blinker import signal
 import numpy as np
 import pandas as pd
 from datetime import datetime
+
+from sklearn import base
 
 def generate_hostel_data(
     num_hostels=3,
@@ -24,13 +27,18 @@ def generate_hostel_data(
                 exam_month = 1 if month in [3, 4, 10, 11] else 0
                 vacation_month = 1 if month in [5, 6] else 0
 
-                base = num_students * 100
-                temp_effect = avg_temperature * 5
-                exam_effect = 500 if exam_month else 0
-                vacation_effect = -800 if vacation_month else 0
+                student_coeff = np.random.uniform(80, 120)
+                temp_coeff = np.random.uniform(3, 8)
+                exam_coeff = np.random.uniform(300, 700)
+                vacation_coeff = np.random.uniform(-1000, -500)
+
+                base = num_students * student_coeff
+                temp_effect = avg_temperature * temp_coeff
+                exam_effect = exam_coeff if exam_month else 0
+                vacation_effect = vacation_coeff if vacation_month else 0
 
                 signal = base + temp_effect + exam_effect + vacation_effect
-                noise = np.random.normal(0, 0.05 * signal)
+                noise = np.random.normal(0, 0.1 * signal)
 
                 electricity_kwh = max(signal + noise, 0)
 
