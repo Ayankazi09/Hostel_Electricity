@@ -1,88 +1,78 @@
-# Hostel Electricity Consumption Prediction  
-Hackathon 3 – Model Deployment and Maintenance Pipeline
+# ⚡ VoltEdge Analytics: Hostel Electricity Consumption Hub  
 
 ## Overview
-This project implements a production-style machine learning pipeline to predict monthly electricity consumption of university hostels.  
-The focus of the project is not model performance, but engineering practices such as data storage, reproducibility, deployment readiness, and model lifecycle management.
+This project implements a production-style machine learning pipeline and a fully custom Single Page Application (SPA) dashboard to predict and analyze monthly electricity consumption of university hostels.  
 
-The system uses:
-- SQL-based data storage
-- Python scripts instead of notebooks
-- Serialized machine learning models
-- A Streamlit dashboard for analysis and prediction
-- Git for version control and project tracking
+The focus of the project spans both model performance and robust data engineering practices, including data storage, reproducibility, deployment readiness, and model lifecycle management.
+
+The system features:
+- **FastAPI Backend:** A lightweight, high-performance Python backend serving API endpoints.
+- **Custom SPA Frontend:** A sleek, glassmorphic UI built with HTML, CSS, and vanilla JavaScript, featuring interactive `Chart.js` visualizations.
+- **SQLite Data Storage:** Persistent, queryable historical data layer.
+- **Serialized ML Models:** Pre-trained predictive models managed via a dedicated Model Hub.
 
 ---
 
 ## Problem Statement
-Universities need to monitor and forecast hostel electricity consumption to support budgeting, infrastructure planning, and energy optimization.
+Universities need to monitor, analyze, and forecast hostel electricity consumption to support budgeting, infrastructure planning, and energy optimization.
 
-This project predicts monthly electricity usage of hostels based on occupancy, capacity, temperature, and academic calendar indicators.
+This dynamic tool predicts the monthly electricity usage of individual hostels based on precise dynamic parameters such as occupancy, capacity, temperature, and academic calendar indicators (exams/vacations).
 
 ---
 
-## Data
-- Data is synthetically generated to resemble realistic university hostel usage.
-- No static CSV files are used.
-- A data generation script ensures scalability and reproducibility.
-- All data is stored in a SQL database.
+## Data Pipeline
+- Data is persistently stored in a local SQLite database (`hostel_energy.db`).
+- A centralized data generation script ensures scalability, reproducibility, and synthetic realism.
+- No static CSV files are used for the main historical data layer.
 
 ### Features
-- hostel_id  
-- month  
-- year  
-- num_students  
-- hostel_capacity  
-- avg_temperature  
-- exam_month  
-- vacation_month  
+- `hostel_id`  
+- `month` & `year`  
+- `num_students` (Occupancy rate)
+- `hostel_capacity`  
+- `avg_temperature`  
+- `exam_month` (Boolean)  
+- `vacation_month` (Boolean)  
 
 ### Target
-- electricity_units (monthly electricity consumption)
-
-
-## Model
-- Algorithm: Linear Regression  
-- Rationale: Interpretable, stable, and suitable for structured numerical data  
-- Evaluation Metrics:
-  - RMSE ≈ 1280 units
-  - R² ≈ 0.95
-
-The model is trained using SQL-loaded data and evaluated on a held-out test set.
+- `electricity_kwh` / `electricity_units` (Monthly electricity consumption)
 
 ---
 
-## Dashboard
-The Streamlit dashboard provides:
-- Data preview and descriptive statistics
-- Exploratory analysis of electricity consumption patterns
-- A prediction interface for new user inputs
-- Live inference using the latest trained model
-
-The dashboard always loads the most recent serialized model.
+## Model & Training Lifecycle
+- **Algorithms:** Evaluates multiple regressors (e.g., Random Forest, Linear Regression).
+- **Model Hub:** The dashboard features a strictly integrated "Model Hub" tracking historical model accuracy logs (RMSE, MAPE, R², Score) and exposing serialized model artifacts (`.pkl`) for direct download.
+- **Maintenance:** 
+  - Retraining is handled via standalone Python scripts within the `training/` directory.
+  - Updated models seamlessly replace previous artifacts without requiring frontend downtime.
 
 ---
 
-## Model Lifecycle and Maintenance
-- New data can be generated or ingested periodically
-- Retraining is handled via standalone Python scripts
-- Updated models replace previous artifacts
-- Git commit history preserves development and update timelines
+## Dashboard Features
+The VoltEdge SPA provides:
+- **Overview:** Real-time KPI counters and global seasonal consumption trends.
+- **Deep Analytics:** Scatter plots, temperature impact analysis, and seasonal data distribution charts.
+- **Prediction Studio:** An interactive AI simulator allowing users to tweak occupancy and temperature sliders to instantly forecast load demands, alert on thresholds, and calculate estimated financial costs.
+- **Model Hub:** Transparent display of current model matrices, past performance logs, and an artifact download repository.
+- **Raw Data Explorer:** Searchable, paginated datatables to audit historical database records.
 
 ---
 
-## Version Control
-- The repository is public
-- Commit history reflects incremental development
-- Large data files and model binaries are excluded
-- Data generation scripts ensure reproducibility
+## How to Run Locally
 
----
-
-## How to Run
+**1. Install Dependencies**
 ```bash
 pip install -r requirements.txt
+```
+
+**2. Initialize Database & Train Models** *(If starting from scratch)*
+```bash
 python db/ingest_data.py
 python training/train_and_save_model.py
-python -m streamlit run app.py
+```
 
+**3. Launch the Application**
+```bash
+python api.py
+```
+*The full dashboard application will now be natively accessible at **http://127.0.0.1:8000***
