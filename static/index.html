@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Electricity Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fa-solid fa-bolt"></i>
+                <h2>VoltEdge Analytics</h2>
+            </div>
+            <nav id="sidebar-nav">
+                <a href="#overview" class="nav-link active" data-target="page-overview"><i class="fa-solid fa-chart-pie"></i> Overview</a>
+                <a href="#analysis" class="nav-link" data-target="page-analysis"><i class="fa-solid fa-chart-line"></i> Analysis Logs</a>
+                <a href="#prediction" class="nav-link" data-target="page-prediction"><i class="fa-solid fa-microchip"></i> Prediction Studio</a>
+                <a href="#models" class="nav-link" data-target="page-models"><i class="fa-solid fa-brain"></i> Model Hub</a>
+                <a href="#data" class="nav-link" data-target="page-rawdata"><i class="fa-solid fa-table"></i> Historic Tables</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="content">
+            <header>
+                <h1 id="page-title">Dashboard Overview</h1>
+                <p class="subtitle" id="page-subtitle">Real-time electricity consumption insights</p>
+            </header>
+
+            <!-- PAGE: OVERVIEW -->
+            <div id="page-overview" class="page-section" style="display: block;">
+                <section class="kpi-grid">
+                    <div class="kpi-card glass">
+                        <i class="fa-solid fa-database kpi-icon"></i>
+                        <div class="kpi-info">
+                            <h3>Total Records</h3>
+                            <p id="kpi-records">--</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass">
+                        <i class="fa-solid fa-building kpi-icon"></i>
+                        <div class="kpi-info">
+                            <h3>Hostels Tracked</h3>
+                            <p id="kpi-hostels">--</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass">
+                        <i class="fa-solid fa-bolt kpi-icon"></i>
+                        <div class="kpi-info">
+                            <h3>Avg Consumption</h3>
+                            <p id="kpi-avg">-- <small>kWh</small></p>
+                        </div>
+                    </div>
+                    <div class="kpi-card glass highlight-card">
+                        <i class="fa-solid fa-arrow-trend-up kpi-icon"></i>
+                        <div class="kpi-info">
+                            <h3>Max Peak</h3>
+                            <p id="kpi-max">-- <small>kWh</small></p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="charts-area">
+                    <div class="chart-container glass main-chart">
+                        <h2>Monthly Global Trend</h2>
+                        <div style="position: relative; height: 350px; width: 100%;">
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- PAGE: ANALYSIS -->
+            <div id="page-analysis" class="page-section" style="display: none;">
+                <section class="analytics-section">
+                    <div class="predictor-header" style="margin-top: 0; border-bottom: none;">
+                        <h2><i class="fa-solid fa-chart-line"></i> Deep Data Diagnostics</h2>
+                        <p>Model performance evaluation and data distribution insights.</p>
+                    </div>
+                    <div class="analytics-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem;">
+                        <!-- Removed model charts to Model Hub -->
+                        <div class="chart-container glass">
+                            <h2>Students vs Consumption</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="scatterStudentChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass">
+                            <h2>Temperature Impact</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="scatterTempChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass">
+                            <h2>Monthly Average Consumption</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="monthlyAvgChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass">
+                            <h2>Consumption Volume Distribution</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="distChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass">
+                            <h2>Seasonal Electricity Split</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="seasonChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass">
+                            <h2>Capacity Utilization Impact</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="utilChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- PAGE: PREDICTION AND FORECAST -->
+            <div id="page-prediction" class="page-section" style="display: none;">
+                <section id="predictor" class="predictor-section glass" style="margin-top: 0;">
+                    <div class="predictor-header">
+                        <h2><i class="fa-solid fa-wand-magic-sparkles"></i> Prediction Engine</h2>
+                        <p>Adjust parameters to instantly forecast electricity needs using our trained models.</p>
+                    </div>
+                    
+                    <div class="predictor-grid">
+                        <form id="prediction-form" class="form-container">
+                            <div class="form-group">
+                                <label>Target Hostel</label>
+                                <select id="sim-hostel"><option>Loading...</option></select>
+                            </div>
+                            <div class="form-group">
+                                <label>Target Month</label>
+                                <select id="sim-month">
+                                    <option value="1">January</option><option value="2">February</option>
+                                    <option value="3">March</option><option value="4">April</option>
+                                    <option value="5">May</option><option value="6" selected>June</option>
+                                    <option value="7">July</option><option value="8">August</option>
+                                    <option value="9">September</option><option value="10">October</option>
+                                    <option value="11">November</option><option value="12">December</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Simulation Year</label>
+                                <input type="number" id="sim-year" value="2025" min="2020" max="2035">
+                            </div>
+                            <div class="form-group slider-group">
+                                <label>Expected Occupancy (<span id="students-val">250</span> students)</label>
+                                <input type="range" id="sim-students" min="0" max="800" value="250">
+                            </div>
+                            <div class="form-group slider-group">
+                                <label>Hostel Capacity (<span id="cap-val">300</span> maximum)</label>
+                                <input type="range" id="sim-cap" min="100" max="800" value="300">
+                            </div>
+                            <div class="form-group slider-group">
+                                <label>Average Temperature (<span id="temp-val">30</span> °C)</label>
+                                <input type="range" id="sim-temp" min="10" max="50" step="0.5" value="30">
+                            </div>
+                            <div class="form-group slider-group">
+                                <label>Alert Threshold (<span id="warn-val">15</span>% above average)</label>
+                                <input type="range" id="sim-warn" min="0" max="100" value="15">
+                            </div>
+                            <div class="form-group slider-group">
+                                <label>Electricity Rate ($<span id="rate-val">0.15</span> / kWh)</label>
+                                <input type="range" id="sim-rate" min="0.05" max="0.50" step="0.01" value="0.15">
+                            </div>
+                            
+                            <div class="checkboxes">
+                                <label class="toggle-btn">
+                                    <input type="checkbox" id="sim-exam">
+                                    <span>Exam Month</span>
+                                </label>
+                                <label class="toggle-btn">
+                                    <input type="checkbox" id="sim-vacation">
+                                    <span>Vacation Month</span>
+                                </label>
+                            </div>
+                            
+                            <button type="submit" class="cta-button">Run AI Simulator <i class="fa-solid fa-play"></i></button>
+                        </form>
+
+                        <div class="result-container">
+                            <div class="result-card">
+                                <h3>Predicted Demand</h3>
+                                <h1 class="prediction-value" id="pred-result">0.00 <small>kWh</small></h1>
+                                <p id="pred-context" class="context-text">Run the simulator to see baseline comparisons.</p>
+                                
+                                <div class="comparison-bar">
+                                    <div class="bar-fill" id="bar-fill"></div>
+                                </div>
+                                <div class="bar-labels">
+                                    <span>Baseline Average</span>
+                                    <span>Surge Capacity</span>
+                                </div>
+                                
+                                <div id="cost-box" style="margin-top: 1.5rem; padding: 1rem; background: rgba(88, 166, 255, 0.1); border-radius: 8px; border: 1px solid var(--accent); display: none;">
+                                    <h4 style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.5rem;">Estimated Monthly Cost</h4>
+                                    <h2 id="pred-cost" style="color: var(--accent);">$0.00</h2>
+                                </div>
+                                
+                                <button id="export-btn" class="secondary-btn" style="margin-top: 1.5rem; display: none;">
+                                    <i class="fa-solid fa-file-pdf"></i> Download PDF Report
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 12-Month Future Forecast -->
+                <section id="forecast" class="analytics-section">
+                    <div class="predictor-header" style="margin-top: 1rem; border-bottom: none;">
+                        <h2><i class="fa-solid fa-calendar-days"></i> AI Future Forecasting</h2>
+                        <p>Generate a 12-month futuristic outlook exclusively predicting 2026 demands based on standard occupancy metrics.</p>
+                    </div>
+                    <div class="forecast-container glass" style="padding: 2rem; margin-bottom: 3rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem; align-items: end;">
+                            <div class="form-group" style="margin-bottom: 0; min-width: 200px;">
+                                <label>Target Hostel for Forecast</label>
+                                <select id="forecast-hostel"><option>Loading...</option></select>
+                            </div>
+                            <button id="gen-forecast-btn" class="cta-button" style="width: auto; padding: 0.8rem 2rem;">Generate Outlook</button>
+                        </div>
+                        
+                        <div style="position: relative; height: 350px; width: 100%;">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- PAGE: MODEL HUB -->
+            <div id="page-models" class="page-section" style="display: none;">
+                <section class="analytics-section">
+                    <div class="predictor-header" style="margin-top: 0;">
+                        <h2><i class="fa-solid fa-brain"></i> Model Hub</h2>
+                        <p>View detailed accuracy metrics, evaluations, and download trained model artifacts (.pkl files).</p>
+                    </div>
+                    
+                    <div class="glass" style="padding: 2rem; margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Model Accuracy Metrics</h3>
+                        <div class="table-responsive">
+                            <table id="metricsTable" class="display" style="width:100%; color: var(--text-primary);">
+                                <thead>
+                                    <tr>
+                                        <th>Model</th>
+                                        <th>RMSE</th>
+                                        <th>MAPE</th>
+                                        <th>R2</th>
+                                        <th>CV_RMSE</th>
+                                        <th>Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="glass" style="padding: 2rem; margin-bottom: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Past Logs of Model Performance</h3>
+                        <div class="table-responsive">
+                            <table id="pastLogsTable" class="display" style="width:100%; color: var(--text-primary);">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Model Accuracies</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="analytics-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+                        <div class="chart-container glass">
+                            <h2>Model Precision (RMSE)</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="rmseChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-container glass">
+                            <h2>Feature Importance / Weights</h2>
+                            <div style="position: relative; height: 250px; width: 100%;">
+                                <canvas id="featureChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass" style="padding: 2rem;">
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Available Model Files</h3>
+                        <div id="models-list-container" style="display: flex; flex-wrap: wrap; gap: 1.5rem;">
+                            <!-- Models will be dynamically injected here -->
+                            <p id="models-loading">Loading model files...</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- PAGE: RAW DATA -->
+            <div id="page-rawdata" class="page-section" style="display: none;">
+                <section id="rawdata" class="analytics-section">
+                    <div class="predictor-header" style="margin-top: 0;">
+                        <h2><i class="fa-solid fa-table"></i> Raw Data Explorer</h2>
+                        <p>Search, filter, and sort all historical electricity records.</p>
+                    </div>
+                    <div class="glass" style="padding: 2rem;">
+                        <table id="historyTable" class="display" style="width:100%; color: var(--text-primary);">
+                            <thead>
+                                <tr>
+                                    <th>Hostel ID</th>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Students</th>
+                                    <th>Capacity</th>
+                                    <th>Temp (°C)</th>
+                                    <th>Exam</th>
+                                    <th>Vacation</th>
+                                    <th>Consumption (kWh)</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
